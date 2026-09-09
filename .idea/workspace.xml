@@ -4,18 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7259175a-b4d3-4e6c-9a11-e92f02b06b71" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/AgentLearning.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01-Travel Agent(beginning)/llm.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01-Travel Agent(beginning)/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01-Travel Agent(beginning)/tool.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01-Travel Agent(beginning)/travel.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/01-Travel Agent(beginning)/weather.py" afterDir="false" />
+    <list default="true" id="7259175a-b4d3-4e6c-9a11-e92f02b06b71" name="更改" comment="HelloAgent第三章学习笔记">
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/Compacter.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/HelloAgentLLM.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/Planner.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/Prompt.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/ReActAgent.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/tools/Tools.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/tools/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/tools/read_url.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/tools/search.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +36,10 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/01-Travel Agent(beginning)/llm.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/01-Travel Agent(beginning)/main.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/02-智能体经典范式构建/HelloAgentLLM.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/02-智能体经典范式构建/Planner.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/02-智能体经典范式构建/ReActAgent.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/02-智能体经典范式构建/tools/Tools.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -50,26 +55,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.llm.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.HelloAgentLLM (1).executor": "Run",
+    "Python.Planner.executor": "Run",
+    "Python.ReActAgent.executor": "Run",
+    "Python.Tools.executor": "Run",
+    "Python.llm (1).executor": "Run",
+    "Python.llm.executor": "Run",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "Errors",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
-  <component name="RunManager" selected="Python.main">
-    <configuration name="llm" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+}]]></component>
+  <component name="RunManager" selected="Python.Planner">
+    <configuration name="HelloAgentLLM (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AgentLearning" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -78,12 +90,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/01-Travel Agent(beginning)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/02-智能体经典范式构建" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/01-Travel Agent(beginning)/llm.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/02-智能体经典范式构建/HelloAgentLLM.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -92,7 +104,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="HelloAgentLLM" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="AgentLearning" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -101,12 +113,81 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/01-Travel Agent(beginning)" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/02-智能体经典范式构建" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/01-Travel Agent(beginning)/main.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\21666\PycharmProjects\AgentLearning\02-智能体经典范式构建\HelloAgentLLM.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Planner" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AgentLearning" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/02-智能体经典范式构建" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/02-智能体经典范式构建/Planner.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ReActAgent" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AgentLearning" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/02-智能体经典范式构建" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/02-智能体经典范式构建/ReActAgent.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Tools" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AgentLearning" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/02-智能体经典范式构建/tools" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/02-智能体经典范式构建/tools/Tools.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -117,8 +198,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
-        <item itemvalue="Python.llm" />
+        <item itemvalue="Python.Planner" />
+        <item itemvalue="Python.ReActAgent" />
+        <item itemvalue="Python.HelloAgentLLM (1)" />
+        <item itemvalue="Python.Tools" />
+        <item itemvalue="Python.HelloAgentLLM" />
       </list>
     </recent_temporary>
   </component>
@@ -140,15 +224,51 @@
       <workItem from="1787993024585" duration="2000" />
       <workItem from="1788006112056" duration="9136000" />
       <workItem from="1788016381573" duration="834000" />
-      <workItem from="1788068310885" duration="3993000" />
+      <workItem from="1788068310885" duration="5118000" />
+      <workItem from="1788189147041" duration="917000" />
+      <workItem from="1788245019611" duration="6275000" />
+      <workItem from="1788362449612" duration="1060000" />
+      <workItem from="1788513063583" duration="14569000" />
+      <workItem from="1788593059035" duration="8857000" />
+      <workItem from="1788604154956" duration="15288000" />
+      <workItem from="1788682423561" duration="4400000" />
+      <workItem from="1788871631553" duration="6056000" />
+      <workItem from="1788934853184" duration="5106000" />
     </task>
+    <task id="LOCAL-00001" summary="简单的agent（查询天气和游玩地点）">
+      <option name="closed" value="true" />
+      <created>1788073375808</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1788073375808</updated>
+    </task>
+    <task id="LOCAL-00002" summary="HelloAgent第三章学习笔记">
+      <option name="closed" value="true" />
+      <created>1788523300406</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1788523300406</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="简单的agent（查询天气和游玩地点）" />
+    <MESSAGE value="HelloAgent第三章学习笔记" />
+    <option name="LAST_COMMIT_MESSAGE" value="HelloAgent第三章学习笔记" />
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/AgentLearning$main.coverage" NAME="main 覆盖结果" MODIFIED="1788072151185" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/01-Travel Agent(beginning)" />
+    <SUITE FILE_PATH="coverage/AgentLearning$Planner.coverage" NAME="Planner 覆盖结果" MODIFIED="1788939566574" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/02-智能体经典范式构建" />
+    <SUITE FILE_PATH="coverage/AgentLearning$llm__1_.coverage" NAME="llm (1) 覆盖结果" MODIFIED="1788516125223" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/02-智能体经典范式构建" />
+    <SUITE FILE_PATH="coverage/AgentLearning$main.coverage" NAME="main 覆盖结果" MODIFIED="1788074002213" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/01-Travel Agent(beginning)" />
+    <SUITE FILE_PATH="coverage/AgentLearning$HelloAgentLLM__1_.coverage" NAME="HelloAgentLLM (1) 覆盖结果" MODIFIED="1788540836925" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/02-智能体经典范式构建" />
+    <SUITE FILE_PATH="coverage/AgentLearning$Tools.coverage" NAME="Tools 覆盖结果" MODIFIED="1788527009072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/02-智能体经典范式构建/tools" />
+    <SUITE FILE_PATH="coverage/AgentLearning$ReActAgent.coverage" NAME="ReActAgent 覆盖结果" MODIFIED="1788873321423" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/02-智能体经典范式构建" />
     <SUITE FILE_PATH="coverage/AgentLearning$llm.coverage" NAME="llm 覆盖结果" MODIFIED="1788068431102" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/01-Travel Agent(beginning)" />
   </component>
 </project>
