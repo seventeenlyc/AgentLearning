@@ -4,20 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7259175a-b4d3-4e6c-9a11-e92f02b06b71" name="更改" comment="HelloAgent第三章学习笔记">
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/Compacter.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/HelloAgentLLM.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/Planner.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/Prompt.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/ReActAgent.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/tools/Tools.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/tools/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/tools/read_url.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/02-智能体经典范式构建/tools/search.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="7259175a-b4d3-4e6c-9a11-e92f02b06b71" name="更改" comment="完成了基础的ReAct与Plan&amp;Solve的搭建。&#10;新增了search，read_url，ToolExecutor作为工具" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -33,6 +20,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "seventeenlyc"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/seventeenlyc/AgentLearning.git",
+    "accountId": "da7fbf10-d127-43c7-831b-dc152a5d45a9"
+  }
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/01-Travel Agent(beginning)/llm.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/01-Travel Agent(beginning)/main.py" root0="SKIP_INSPECTION" />
@@ -233,7 +232,7 @@
       <workItem from="1788604154956" duration="15288000" />
       <workItem from="1788682423561" duration="4400000" />
       <workItem from="1788871631553" duration="6056000" />
-      <workItem from="1788934853184" duration="5106000" />
+      <workItem from="1788934853184" duration="6154000" />
     </task>
     <task id="LOCAL-00001" summary="简单的agent（查询天气和游玩地点）">
       <option name="closed" value="true" />
@@ -251,7 +250,23 @@
       <option name="project" value="LOCAL" />
       <updated>1788523300406</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="完成了基础的ReAct与Plan&amp;Solve的搭建。&#10;新增了search，read_url，ToolExecutor作为工具">
+      <option name="closed" value="true" />
+      <created>1788940100522</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1788940100522</updated>
+    </task>
+    <task id="LOCAL-00004" summary="完成了基础的ReAct与Plan&amp;Solve的搭建。&#10;新增了search，read_url，ToolExecutor作为工具">
+      <option name="closed" value="true" />
+      <created>1788940523315</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1788940523315</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -260,7 +275,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="简单的agent（查询天气和游玩地点）" />
     <MESSAGE value="HelloAgent第三章学习笔记" />
-    <option name="LAST_COMMIT_MESSAGE" value="HelloAgent第三章学习笔记" />
+    <MESSAGE value="完成了基础的ReAct与Plan&amp;Solve的搭建。&#10;新增了search，read_url，ToolExecutor作为工具" />
+    <option name="LAST_COMMIT_MESSAGE" value="完成了基础的ReAct与Plan&amp;Solve的搭建。&#10;新增了search，read_url，ToolExecutor作为工具" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/AgentLearning$Planner.coverage" NAME="Planner 覆盖结果" MODIFIED="1788939566574" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/02-智能体经典范式构建" />
