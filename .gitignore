@@ -1,0 +1,12 @@
+# Environment variables and local secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+
+# IDE metadata
+.idea/
