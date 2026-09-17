@@ -17,7 +17,7 @@ class Planner:
         self.planner = llm
         self.plan=[]
         self.tool=ToolExecutor()
-        self.react_solver=ReActAgent(llm,self.tool,20)
+        self.react_solver=ReActAgent(llm,self.tool,8)
         self.common_solver=HelloAgentLLM()
         self.obs=[]
 
@@ -66,35 +66,113 @@ class Planner:
         if not all(plan[j].get("task") and "need_tool" in plan[j] for j in range(len(plan))):
             print("plan格式错误，注意每一个子任务都需要带有'task'和'need_tool'字段")
             return "plan格式错误，注意每一个子任务都需要带有'task'和'need_tool'字段"
-        history_result=[]
-        i=1
+        history_result = []
+        i = 1
+
         for subplan in plan:
-            print(f"{i}. {subplan.get('task')} []")
-            reply=""
-            if subplan.get("need_tool"):
-                reply,raw_obs,obs=self.react_solver.run(subplan.get("task"),temperature=0.3)
-                self.obs.append(obs)
-                history_result.append({"task":subplan.get('task'),"observation":obs,"tackle":reply})
+            flag = False
+
+            for j in range(1, 4):
+                print(
+                    f"{i}. {subplan.get('task')} "
+                    f"[第 {j}/3 次尝试]"
+                )
+
+                executor_context = EXECUTOR_PROMPT_TEMPLATE.format(
+                    question=question,
+                    plan=plan,
+                    history=history_result,
+                    current_step=subplan.get("task"),
+                    history_obs=self.obs
+                )
+
+                # ==================== 需要工具 ====================
+                if subplan.get("need_tool"):
+                    try:
+                        reply, raw_obs, obs = self.react_solver.run(
+                            subplan.get("task"),
+                            executor_context,
+                            temperature=0.3
+                        )
+
+                        if obs and obs[-1] == "success":
+                            self.obs.append(obs[:-1])
+
+                            history_result.append({
+                                "task": subplan.get("task"),
+                                "observation": obs[:-1],
+                                "tackle": reply
+                            })
+
+                            flag = True
+                            break
+
+                        else:
+                            print(f"当前任务第 {j} 次执行失败")
+
+                    except Exception as e:
+                        print(f"当前任务第 {j} 次发生异常：{e}")
+
+                # ==================== 不需要工具 ====================
+                else:
+                    try:
+                        reply = self.common_solver.generate(
+                            [{
+                                "role": "user",
+                                "content": executor_context
+                            }],
+                            0,
+                            True
+                        )
+
+                        if reply:
+                            history_result.append({
+                                "task": subplan.get("task"),
+                                "observation": None,
+                                "tackle": reply
+                            })
+
+                            flag = True
+                            break
+
+                    except Exception as e:
+                        print(f"当前任务第 {j} 次发生异常：{e}")
+
+            # 三次尝试完成以后
+            if flag:
+                print(f"{i}. {subplan.get('task')} [x]")
             else:
-                reply=self.common_solver.generate([{"role": "user",
-                "content":EXECUTOR_PROMPT_TEMPLATE.format(question=question,plan=plan,history=history_result,current_step=subplan.get('task'),history_obs=self.obs)}]
-                ,0,True)
-                history_result.append({"task":subplan.get('task'),"observation":None,"tackle":reply})
+                history_result.append({
+                    "task": subplan.get("task"),
+                    "observation": None,
+                    "tackle": "该步骤连续执行3次均失败"
+                })
+                print(f"{i}. {subplan.get('task')} [失败]")
 
-            print(f"{i}. {subplan.get('task')} [x]")
-            i=i+1
+            i += 1
 
-        summarizer=HelloAgentLLM()
-        summarizer_prompt=SUMMARY_PROMPT_TEMPLATE.format(question=question,observation=self.obs,history=history_result)
-        answer = summarizer.generate([{"role":"user","content":summarizer_prompt}],0.1)
+        # ==================== 所有子任务执行完才总结 ====================
+
+        summarizer = HelloAgentLLM()
+
+        summarizer_prompt = SUMMARY_PROMPT_TEMPLATE.format(
+            question=question,
+            observation=self.obs,
+            history=history_result
+        )
+
+        answer = summarizer.generate(
+            [{"role": "user", "content": summarizer_prompt}],
+            0.1
+        )
+
         return answer
-
 
 if __name__ == "__main__":
     start=time.perf_counter()
     llm = HelloAgentLLM()
     planer = Planner(llm)
-    question="请比较 GPT-5.6、Claude Opus 4.8 和 Gemini 3.8 flash 在 2026 年 9 月的最新能力、API 价格、上下文窗口和编程表现，并结合“学生个人开发者，主要用于 Agent 开发和代码调试，每月预算 100 元人民币以内”的条件，给出最适合我的选择。要求优先查官方资料；如果官方没有编程能力对比，再查可信的第三方评测。"
+    question="请比较 GPT-5.6Sol、Claude Opus 4.8 和 Gemini 3.8 flash 在 2026 年 9 月的最新能力、API 价格、上下文窗口和编程表现，并结合“学生个人开发者，主要用于 Agent 开发和代码调试，每月预算 100 元人民币以内”的条件，给出最适合我的选择。要求优先查官方资料；如果官方没有编程能力对比，再查可信的第三方评测。"
     print("+"*200)
     plan=planer.planer(question)
     print("----------plan------------")

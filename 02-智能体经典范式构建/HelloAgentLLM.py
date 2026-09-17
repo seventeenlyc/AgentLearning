@@ -40,8 +40,24 @@ class HelloAgentLLM:
                 reply.append(content)
             return "".join(reply)
         except Exception as e:
-            print(f"❌ 调用LLM API时发生错误: {e}")
-            return ""
+            print(f"❌ 调用LLM API时发生错误: {e},重试一次")
+            try:
+                response = self.client.chat.completions.create(model=self.model, messages=message,
+                                                               temperature=temperature, stream=True,
+                                                               reasoning_effort="high")
+
+                reply = []
+                for chunk in response:
+                    if not chunk.choices:
+                        continue
+                    content = chunk.choices[0].delta.content or ""
+                    if output:
+                        print(content, end="", flush=True)
+                    reply.append(content)
+                return "".join(reply)
+            except Exception as ee:
+                print(f"❌ 调用LLM API时发生错误: {e}")
+                return ""
 
 
 

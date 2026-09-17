@@ -3,6 +3,13 @@ from bs4 import BeautifulSoup
 import re
 from ast import literal_eval
 from typing import List,Dict
+from requests.exceptions import (
+    HTTPError,
+    Timeout,
+    ConnectionError,
+    SSLError,
+    RequestException
+)
 from Compacter import Compacter
 from HelloAgentLLM import HelloAgentLLM
 name="read_urls"
@@ -16,19 +23,6 @@ tool_input={
 }
 """
 compact=True
-judge_prompt="""
-你是一个评判信息的专家，你需要根据已有的信息，判断是否已经收集到充足的信息回答用户的问题。
-已有的信息：
-{observation}
-
-用户的问题：
-{question}
-
-你的输出只能在True和False里选择，不需要添加任何其他的语句。
-示例输出：
-True
-
-"""
 def clean_url(url) -> str:
     url = url.strip()
     match = re.fullmatch(
@@ -54,45 +48,79 @@ def read_urls(tool_input:Dict):
     elif tool_input.get("question") is None:
         print("请传入question字段")
         return "错误！缺少字段question，请检查tool_input"
-    try:
-        compacter=Compacter()
-        judger=HelloAgentLLM()
-        cleaned_urls =[clean_url(url) for url in tool_input.get("urls")]
-        headers = {
-            "User-Agent": "Mozilla/5.0"
-        }
-        observation=[]
-        for url in cleaned_urls:
-            response = requests.get(url, headers=headers,timeout=30)
-            response.raise_for_status()
-            soup = BeautifulSoup(response.text, 'lxml')
-            for tag in soup([
-                "script", "style","nav","footer","header","noscript","svg"
-            ]):
-                tag.decompose()
-            content=soup.find("article") or  soup.find("main") or soup.body
 
-            if content is None:
-                return "网页读取成功，但没有发现有效正文。"
-            raw_text=content.get_text(separator='\n',strip=True)
-            text=compacter.compact_message([raw_text],tool_input.get("question"))
-            observation.append(text)
-            reply=judger.generate([{"role":"user","content":judge_prompt.format(observation=observation,question=tool_input.get("question"))}],output=False)
-            judge=literal_eval(reply)
-            if judge:
-                ans=compacter.compact_message(observation,tool_input.get("question"))
-                print(ans)
-                return ans
+    cleaned_urls =[clean_url(url) for url in tool_input.get("urls")]
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+    observation=[]
+    for url in cleaned_urls:
+        for i in range(1,4):
+            success=False
+            try:
+                response = requests.get(url, headers=headers,timeout=i*3+10)
+                response.raise_for_status()
+                soup = BeautifulSoup(response.text, 'lxml')
+                for tag in soup([
+                    "script", "style","nav","footer","header","noscript","svg"
+                ]):
+                    tag.decompose()
+                content=soup.find("article") or  soup.find("main") or soup.body
 
-            observation.append("当前未能搜到完全足够的信息回答此问题，但请根据已有的信息进行总结。并在总结的结果里说明还缺少哪些信息。")
-            ans=compacter.compact_message(observation,tool_input.get("question"))
-            print(ans)
-            return ans
+                if content is None:
+                    observation.append(f"URL: {url}\n""读取成功，但没有找到正文区域。")
+                    break
+                raw_text=content.get_text(separator='\n',strip=True)
+                if not raw_text:
+                    observation.append(f"URL: {url}\n""网页正文为空。")
+                    break
+                observation.append(f"来源URL{url},正文：\n{raw_text}")
+                success=True
+                break
 
+            except HTTPError as e:
+                status_code=(e.response.status_code if e.response is not None else None)
+                if status_code in (400,401,403,404):
+                    print(f"网页返回 {status_code}，"f"不再重试：{url}")
+                    observation.append( f"URL: {url}\n" f"读取失败：HTTP {status_code}")
+                    break
 
-    except Exception as e:
-        return f"解析网页错误，{type(e).__name__}:{e}"
-    return None
+                if status_code is not None and status_code>=500:
+                    print(f"第 {i} 次读取失败："f"HTTP {status_code}")
+                    if i==3:
+                        observation.append(f"URL: {url}\n"f"连续3次读取失败："f"HTTP {status_code}")
+                        continue
+                observation.append( f"URL: {url}\n" f"HTTP错误：{e}" )
+                break
+            except Timeout as e:
+                print(f"{url}：第{i}次读取超时")
+                if i==3:
+                    print(f"{url}:三次读取均超时")
+            except (ConnectionError, SSLError) as e:
+                print(f"第 {i} 次连接失败："f"{e}")
+                if i == 3:
+                    observation.append(f"URL: {url}\n"f"连接失败：{e}")
+
+            except RequestException as e:
+                observation.append(f"URL: {url}\n"f"请求异常：{e}")
+                break
+
+            except Exception as e:
+                observation.append(f"URL: {url}\n" f"网页处理异常：{e}")
+                break
+
+            if success:
+                print(f"读取成功：{url}")
+        else:
+            print("当前读取连续失败 3 次")
+
+    if not observation:
+        return (
+            "所有URL均读取失败，"
+            "没有获得可用正文信息。"
+        )
+    return "\n\n".join(observation)
+
 
 
 func=read_urls

@@ -57,14 +57,29 @@ Action 有两种：
         "tool_input": {{"query":"what is agent?"}}
     }}
 }}
-完成任务：
+完成任务（成功）：
 {{
     "Thought": "已有足够信息，可以结束任务",
     "Action": {{
         "tool_name": "Finish",
-        "tool_input": {{"answer":"最终答案"}}
+        "tool_input": {{
+        "status": "success",
+        "answer":"最终答案"
+        }}
     }}
 }}
+完成任务（失败）：
+{{
+    "Thought": "已有足够信息，可以结束任务",
+    "Action": {{
+        "tool_name": "Finish",
+        "tool_input": {{
+        "status": "failed",
+        "reason":"原因"
+        }}
+    }}
+}}
+请在"answer"或"reason"的末尾附上来源网址（如果有）
 除了Finish以外，**每一个tool_name对应的tool_input格式在上文的工具描述里**，请严格按照格式进行输出。
 当你收集到足够的信息时，应使用：
 tool_name = "Finish"
@@ -80,6 +95,9 @@ tool_name = "Finish"
 - 信息足够：立即 Finish。
 - 信息不完整但已经无法继续验证：使用 Finish 返回当前能够确认的结果，并明确指出缺失信息。
 - 不得为了填补缺失信息而猜测或编造事实。
+
+当前上下文：
+{context}
 
 {step_warning}
 
@@ -130,7 +148,21 @@ EXECUTOR_PROMPT_TEMPLATE = """
 # 历史观察
 {history_obs}
 
+事实使用规则：
+
+你只能使用：
+1. 原始问题中明确提供的信息；
+2. 已完成步骤 history 中明确获得的信息；
+3. history_obs 中明确记录的信息。
+
+对于价格、发布日期、免费额度、API 限额、产品功能、
+基准分数、汇率等可能变化的外部事实，
+如果历史信息中没有明确提供，禁止凭自身知识补充。
+
+如果计算必须使用某个缺失参数，可以明确说明采用的“假设值”，
+但必须标注为假设，不能描述为已确认事实。
 请围绕当前步骤收集必要信息并完成该步骤。
+
 """
 
 SUMMARY_PROMPT_TEMPLATE = """
