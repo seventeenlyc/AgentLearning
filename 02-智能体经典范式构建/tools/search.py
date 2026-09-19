@@ -1,24 +1,25 @@
 import os
 from dotenv import load_dotenv
 from serpapi import SerpApiClient
-from typing import Dict
+from typing import Dict,List,Any
 load_dotenv()
 name="search"
 description = """一个网页搜索引擎。当你需要回答关于时事、事实以及在你的知识库中找不到的信息时，应使用此工具。
 tool_input={"query":"你要搜索的问题"}
 """
 compact=False
-def search(query:Dict) ->str:
+def search(query:Dict) :
     """
     调用SerpApi进行网页搜索，优先返回直接答案或知识图谱信息。
     """
+    error=[]
     if not query.get("query"):
         print("tool_input格式错误！请严格按照{\"query\":\"你要搜索的问题\"}的格式传参")
-        return "tool_input格式错误，找不到query字段，请检查格式！"
+        return ["tool_input格式错误，找不到query字段，请检查格式！"],"tool_input格式错误，找不到query字段，请检查格式！"
     print(f"🔍 正在执行 [SerpApi] 网页搜索: {query.get('query')}")
     api_key=os.getenv("SEARCH_API_KEY")
     if not api_key:
-        return f"错误：请先配置SerpApi的api_key"
+        return [f"错误：请先配置SerpApi的api_key"],f"错误：请先配置SerpApi的api_key"
     params={
         "q": query.get("query"),
         "engine":"google",
@@ -45,13 +46,14 @@ def search(query:Dict) ->str:
                         f"[{i + 1}] {res.get('title', '')}\n摘要：{res.get('snippet', '')}\nURL:{res.get('link','')}"
                         for i, res in enumerate(results["organic_results"][:3])
                     ]
-                    return "\n\n".join(snippets)
+                    return [],"\n\n".join(snippets)
 
 
             except Exception as e:
+                error.append(e)
                 print(f"搜索时发生错误：{e}")
 
-        return f"对不起，没有找到关于 '{query.get('query')}' 的信息。"
+        return [f"对不起，没有找到关于 '{query.get('query')}' 的信息。"],f"对不起，没有找到关于 '{query.get('query')}' 的信息。"
 
     finally:
         print("已退出搜索工具")

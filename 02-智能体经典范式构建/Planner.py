@@ -2,6 +2,7 @@ import os
 from HelloAgentLLM import*
 from Prompt import *
 import tools
+from Reflection import ReflectionAgent
 from tools.Tools import *
 import re
 from openai import OpenAI
@@ -9,6 +10,7 @@ from typing import List, Dict, Any
 from ReActAgent import ReActAgent,load_tools
 from dotenv import load_dotenv
 import time
+from Memory import *
 from ast import literal_eval
 load_dotenv()
 
@@ -20,6 +22,7 @@ class Planner:
         self.react_solver=ReActAgent(llm,self.tool,8)
         self.common_solver=HelloAgentLLM()
         self.obs=[]
+        self.reflection=ReflectionAgent(llm)
 
     def planer(self,question:str)->List:
         self.plan=[]
@@ -46,7 +49,7 @@ class Planner:
             return []
         return self.plan
 
-    def solve(self,question:str,plan:List[Dict[str,Any]]):
+    def solve(self,state:AgentState,question:str,plan:List[Dict[str,Any]]):
         self.obs=[]
         if not isinstance(plan,list):
             print("plan格式错误，必须是List[Dict[any,any]]的格式，外层必须是列表")
@@ -93,6 +96,7 @@ class Planner:
                             subplan.get("task"),
                             executor_context,
                             temperature=0.3
+                            ,state=state
                         )
 
                         if obs and obs[-1] == "success":
@@ -172,12 +176,26 @@ if __name__ == "__main__":
     start=time.perf_counter()
     llm = HelloAgentLLM()
     planer = Planner(llm)
-    question="请比较 GPT-5.6Sol、Claude Opus 4.8 和 Gemini 3.8 flash 在 2026 年 9 月的最新能力、API 价格、上下文窗口和编程表现，并结合“学生个人开发者，主要用于 Agent 开发和代码调试，每月预算 100 元人民币以内”的条件，给出最适合我的选择。要求优先查官方资料；如果官方没有编程能力对比，再查可信的第三方评测。"
+    question="""这是一个异常处理测试，请严格执行：
+
+1. 不要调用 search。
+2. 直接调用 read_urls 工具。
+3. tool_input 只传入：
+   {
+       "urls": ["https://example.invalid/reflection-trigger"]
+   }
+4. 故意不要传入 question 字段，不要自动补全。
+5. 根据工具返回的错误信息，分析这次工具调用失败的原因，并给出下一步建议。
+6. 最后调用 Finish。"""
     print("+"*200)
+    state = AgentState()
     plan=planer.planer(question)
+    state.plan = plan
+    state.task_id = "001"
+
     print("----------plan------------")
     print(plan)
-    print(planer.solve(question,plan))
+    print(planer.solve(state,question,plan))
 
     endtime=time.perf_counter()
     print(f"共计用时：{endtime-start:.2f}s")

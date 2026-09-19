@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from ast import literal_eval
+from Memory import *
 from typing import List,Dict
 from requests.exceptions import (
     HTTPError,
@@ -42,12 +43,13 @@ def clean_url(url) -> str:
 
 
 def read_urls(tool_input:Dict):
+    error=[]
     if tool_input.get('urls') is None:
         print("请传入需要搜索的urls")
-        return "错误！缺少字段urls，请检查tool_input"
+        return ["错误！缺少字段urls，请检查tool_input"],"错误！缺少字段urls，请检查tool_input"
     elif tool_input.get("question") is None:
         print("请传入question字段")
-        return "错误！缺少字段question，请检查tool_input"
+        return ["错误！缺少字段question，请检查tool_input"],"错误！缺少字段question，请检查tool_input"
 
     cleaned_urls =[clean_url(url) for url in tool_input.get("urls")]
     headers = {
@@ -73,6 +75,7 @@ def read_urls(tool_input:Dict):
                 raw_text=content.get_text(separator='\n',strip=True)
                 if not raw_text:
                     observation.append(f"URL: {url}\n""网页正文为空。")
+                    error.append({url: "网页正文为空"})
                     break
                 observation.append(f"来源URL{url},正文：\n{raw_text}")
                 success=True
@@ -83,12 +86,14 @@ def read_urls(tool_input:Dict):
                 if status_code in (400,401,403,404):
                     print(f"网页返回 {status_code}，"f"不再重试：{url}")
                     observation.append( f"URL: {url}\n" f"读取失败：HTTP {status_code}")
+                    error.append({url:status_code})
                     break
 
                 if status_code is not None and status_code>=500:
                     print(f"第 {i} 次读取失败："f"HTTP {status_code}")
                     if i==3:
                         observation.append(f"URL: {url}\n"f"连续3次读取失败："f"HTTP {status_code}")
+                        error.append({url:status_code})
                         continue
                 observation.append( f"URL: {url}\n" f"HTTP错误：{e}" )
                 break
@@ -96,17 +101,21 @@ def read_urls(tool_input:Dict):
                 print(f"{url}：第{i}次读取超时")
                 if i==3:
                     print(f"{url}:三次读取均超时")
+                    success_read[-1]['reason'] = 'Timeout'
             except (ConnectionError, SSLError) as e:
                 print(f"第 {i} 次连接失败："f"{e}")
                 if i == 3:
                     observation.append(f"URL: {url}\n"f"连接失败：{e}")
+                    error.append({url:e})
 
             except RequestException as e:
                 observation.append(f"URL: {url}\n"f"请求异常：{e}")
+                error.append({url:e})
                 break
 
             except Exception as e:
                 observation.append(f"URL: {url}\n" f"网页处理异常：{e}")
+                error.append({url:e})
                 break
 
             if success:
@@ -115,11 +124,8 @@ def read_urls(tool_input:Dict):
             print("当前读取连续失败 3 次")
 
     if not observation:
-        return (
-            "所有URL均读取失败，"
-            "没有获得可用正文信息。"
-        )
-    return "\n\n".join(observation)
+        return error,"所有URL均读取失败，没有获得可用正文信息。"
+    return error,"\n\n".join(observation)
 
 
 

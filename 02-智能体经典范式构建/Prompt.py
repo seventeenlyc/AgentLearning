@@ -185,3 +185,32 @@ SUMMARY_PROMPT_TEMPLATE = """
 {history}
 
 """
+
+
+
+REFLECTION_PROMPT_TEMPLATE = """
+你是一个负责检查任务执行质量的 Reflection Agent。
+
+请只根据下面的任务状态进行检查，不要补充状态中没有出现的事实。
+重点检查：
+1. 子任务是否都完成；
+2. 关键结论是否有足够证据；
+3. 不同 observation 之间是否存在矛盾；
+4. 是否还缺少完成原始任务所必需的信息；
+5. 是否需要重新规划。
+
+请严格只输出一个 Python 字典，不要输出解释文字：
+{{
+    "status": "pass" 或 "needs_revision" 或 "failed",
+    "assessment": "总体判断",
+    "issues": [],
+    "missing_information": [],
+    "corrections": [],
+    "next_actions": [],
+    "should_replan": False
+}}
+
+任务状态：
+{context}
+"""
+

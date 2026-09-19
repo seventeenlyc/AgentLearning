@@ -1,6 +1,8 @@
 import tools
 from tools.Tools import ToolExecutor
 from HelloAgentLLM import *
+from Memory import *
+from Reflection import *
 from Prompt import *
 import re
 import importlib
@@ -8,7 +10,7 @@ import pkgutil
 from Compacter import Compacter
 import ast
 import json
-from typing import Dict,List,Any
+from typing import Dict,List,Any,Optional
 def load_tools(tool:ToolExecutor):
     for info in pkgutil.iter_modules(tools.__path__):
         module_name=info.name
@@ -36,19 +38,21 @@ class ReActAgent:
         self.raw_obs=[]     #记录工具的原始调用结果
         self.obs=[]     #raw_obs经过处理以后得到的高质量的Observation
         self.compacter = Compacter()
+        self.reflection=ReflectionAgent(llm)
         load_tools(self.tool)
 
-    def run(self,question:str,context:str="",sys_prompt:str=None,temperature:float=0.5)->(str,List,List):
+    def run(self,question:str,context:str="",sys_prompt:str=None,temperature:float=0.5,state:AgentState=None)->(str,List,List):
         """
         ReActAgent的运行入口
         :param question:
         :return: 返回模型根据提问的最终结果、原始的工具调用结果、处理后的高质量Observation
         """
-
         self.history=[]
         self.obs=[]
         self.raw_obs=[]
         self.actions=set()
+        error=[]
+
         for r in range(1,4):
             current_step = 0
             while current_step<self.max_step:
@@ -94,12 +98,29 @@ class ReActAgent:
                     if tool_input.get('status')=='success' and tool_input.get('answer'):
                         print('*'*200)
                         print(tool_input.get('answer'),flush=True,end='')
+                        state.record_step(
+                            question,
+                            status="success",
+                            observation=self.obs,
+                            error=error,
+                        )
+                        result=self.reflection.reflect(state)
+                        self.obs.append(result)
                         self.obs.append("success")
-                        return tool_input.get('answer'),self.raw_obs,self.obs
+                        return result,self.raw_obs,self.obs
                     elif tool_input.get('status')=='failed' and tool_input.get('reason'):
                         print("任务失败，原因" + tool_input.get('reason'))
                         self.history.append("任务失败，原因"+tool_input.get('reason'))
                         self.raw_obs.append(tool_input.get('reason'))
+                        error.append(tool_input.get('reason'))
+                        state.record_step(
+                            question,
+                            status="failed",
+                            observation=self.obs,
+                            error=error,
+                        )
+                        result=self.reflection.reflect(state)
+                        return result,self.raw_obs,self.obs
                         break
                     else:
                         print("finish格式错误，缺少参数")
@@ -122,9 +143,20 @@ class ReActAgent:
                 observation=""
                 if action_key in self.actions:
                     observation="该工具调用已经执行过，请不要重复调用。请使用已有Observation，尝试其他工具或Finish。"
+                    error=["重复调用工具做相同的事情"]
+                    state.record_step(
+                        question,
+                        status="failed",
+                        observation=observation,
+                        tool=tool_name,
+                        action_input=tool_input,
+                        error=error,
+                    )
+                    continue
                 else:
                     module=importlib.import_module(f"{tools.__name__}.{tool_name}")
-                    self.raw_obs.append(self.tool.getTool(tool_name)(tool_input))
+                    error,raw_answer=self.tool.getTool(tool_name)(tool_input)
+                    self.raw_obs.append(raw_answer)
                     if getattr(module,"compact")==True:
                         observation=self.compacter.compact_message(self.raw_obs[-1],question)
                     else:
@@ -133,7 +165,18 @@ class ReActAgent:
                     self.actions.add(action_key)
                 self.history.append(f'"action":{tool_name}[{tool_input}],"observation":{observation}')
                 self.obs.append(observation)
-
+                state.record_step(
+                    question,
+                    status="failed" if error else "success",
+                    observation=observation,
+                    tool=tool_name,
+                    action_input=tool_input,
+                    error=error,
+                )
+                if error:
+                    result=self.reflection.reflect(state)
+                    self.obs.append(result)
+                    self.history.append(f'"reflection":{result}')
 
 
         print("循环结束，未能在有限步骤内完成任务")
