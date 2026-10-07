@@ -7,6 +7,16 @@
 .venv/
 __pycache__/
 *.py[cod]
+.pytest_cache/
 
 # IDE metadata
 .idea/
+
+# Local evaluation and cloud sync temporary files
+.jbeval/
+.tmp.drivedownload/
+.tmp.driveupload/
+
+# Personal information
+04-Rag_demo/data/memories.json
+04-Rag_demo/data/question.json
