@@ -10,3 +10,7 @@ __pycache__/
 
 # IDE metadata
 .idea/
+
+#Personal Information
+04-Rag_demo/data/memories.json
+04-Rag_demo/data/question.json
