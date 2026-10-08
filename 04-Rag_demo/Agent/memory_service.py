@@ -74,4 +74,3 @@ def create_memory(
     }
 
     return memory
-
