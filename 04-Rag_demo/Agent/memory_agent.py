@@ -63,7 +63,7 @@ def memory_agent(ret:Retriever,model:ChatOpenAI,checkpointer,config):
         if raw_content.startswith("/remember "):
             raw_content = raw_content[len("/remember "):]
 
-        created_by={}
+        created_by:Dict
         if not auto_create:
             created_by = {
                 "type": "user",
