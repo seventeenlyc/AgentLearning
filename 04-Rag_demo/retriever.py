@@ -31,6 +31,8 @@ class Retriever:
         return self._search(query,top_k,min_score)
 
 
+    def delete_memory(self,id:str):
+        return self._delete_memory(id)
 
     def _build_search_text(self,memory:Dict):
         try:
@@ -46,6 +48,11 @@ class Retriever:
         except Exception:
             raise self._invalid_memory()
 
+
+    def update_memory(self,memory_id:str,new_memory:Dict):
+        if not self._check_memory(new_memory):
+            raise self._invalid_memory()
+        return self._update_memory(memory_id,new_memory)
 
     def _load_memory(self,path,raw_memory):
         if path:
@@ -103,6 +110,37 @@ class Retriever:
     def _save_memory(self):
         with open(self.path, "w", encoding="utf-8") as f:
             json.dump(self.memory, f, ensure_ascii=False, indent=2)
+
+    def _delete_memory(self, memory_id: str):
+        for i, memory in enumerate(self.memory):
+            if memory["id"] == memory_id:
+                del self.memory[i]
+                del self.documents[i]
+                self.embeddings = np.delete(
+                    self.embeddings, i, axis=0
+                )
+                self._save_memory()
+                return True
+
+        return False
+
+
+    def _update_memory(self,memory_id:str,new_memory:Dict):
+        for i, memory in enumerate(self.memory):
+            if memory["id"] == memory_id:
+                document = self.build_search_text(new_memory)
+                embedding = self.model.encode(
+                    document,
+                    normalize_embeddings=True,
+                )
+                self.memory[i] = new_memory
+                self.documents[i] = document
+                self.embeddings[i] = embedding
+                self._save_memory()
+                return True
+
+        return False
+
 
     @staticmethod
     def _invalid_memory():

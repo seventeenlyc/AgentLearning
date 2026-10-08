@@ -1,8 +1,9 @@
 from datetime import date, datetime, timezone, timedelta
-from typing import Literal
+from typing import Literal, overload
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field
+from typing_extensions import override
 
 
 class MemorySemantic(BaseModel):
@@ -34,15 +35,17 @@ class MemorySemantic(BaseModel):
     )
 
 
-
 def create_memory(
     ret,
     *,
+    memory_id: str | None = None,
     raw_content: str,
     semantic: dict,
     source: dict,
     created_by: dict,
+    created_at: datetime | None = None,
     processed_by: dict | None,
+    metadata: dict | None = None,
 ):
     if not raw_content.strip():
         raise ValueError("记忆原文不能为空")
@@ -57,7 +60,7 @@ def create_memory(
     ).isoformat(timespec="seconds")
 
     memory = {
-        "id": f"memory_{uuid4().hex}",
+        "id": memory_id or f"memory_{uuid4().hex}",
         **fields,
         "raw_content": raw_content,
         "source": dict(source),
@@ -65,10 +68,9 @@ def create_memory(
         "processed_by": (
             dict(processed_by) if processed_by else None
         ),
-        "created_at": now,
+        "created_at": created_at or now,
         "updated_at": now,
-        "metadata": {},
+        "metadata": metadata or {}
     }
 
-    ret.add_memory(memory)
     return memory

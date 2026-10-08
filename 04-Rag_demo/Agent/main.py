@@ -18,6 +18,8 @@ load_dotenv()
 
 checkpointer = InMemorySaver()
 config={
+    # 父、子 Agent 共用同一检索器，串行执行工具避免修改与删除相互覆盖。
+    "max_concurrency": 1,
     "configurable": {
         "thread_id": "user_001"
     }
