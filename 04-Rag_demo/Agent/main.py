@@ -12,64 +12,64 @@ from typing import Literal
 from uuid import uuid4
 from Agent.memory_service import MemorySemantic,create_memory
 from Agent.memory_agent import memory_agent
-from Agent.tools import calc,get_weather,build_memory_tools,get_time
+from Agent.tools import calc,get_weather,build_memory_tools,get_time,google_search,gemini_google_search,read_url
 from retriever import Retriever
 load_dotenv()
 
-checkpointer = InMemorySaver()
-config={
-    # 父、子 Agent 共用同一检索器，串行执行工具避免修改与删除相互覆盖。
-    "max_concurrency": 1,
-    "configurable": {
-        "thread_id": "user_001"
-    }
-}
-
-model = ChatOpenAI(model=os.getenv("ASTRAFLOW_MODEL"),
-                   api_key=os.getenv("ASTRAFLOW_API_KEY"),
-                   base_url=os.getenv("ASTRAFLOW_BASE_URL"), )
-
-retriever = Retriever(path="../data/memories.json")
-add_memory,memory_operation=memory_agent(ret=retriever,model=model,checkpointer=checkpointer,config=config)
-tools=[calc,get_weather,memory_operation,get_time]
-
-model_with_tools=model.bind_tools(tools)
-
-
-def call_model(state: MessagesState):
-    response = model_with_tools.invoke(state["messages"])
-    return {
-        "messages": [response],
-    }
-
-g=StateGraph(MessagesState)
-g.add_node("model",call_model)
-g.add_node("tools",ToolNode(tools))
-
-g.add_edge(START,"model")
-g.add_conditional_edges("model",tools_condition)
-g.add_edge("tools","model")
-
-
-app=g.compile(checkpointer=checkpointer)
-inputs = lambda question: {
-    "messages": [
-        {
-            "role": "user",
-            "content": question
+if __name__ == "__main__":
+    checkpointer = InMemorySaver()
+    config={
+        # 父、子 Agent 共用同一检索器，串行执行工具避免修改与删除相互覆盖。
+        "configurable": {
+            "thread_id": "user_001"
         }
-    ]
-}
-# 使用未绑定工具的 model
-extractor = model.with_structured_output(
-    MemorySemantic,
-    method="function_calling",
-)
-while True:
-    question=input("输入问题：\n")
-    if question.lower()=="exit" or question.lower()=="q":
-        break
-    result=app.invoke(inputs(question),config=config)
+    }
 
-    for r in result["messages"]:
-        r.pretty_print()
+    model = ChatOpenAI(model=os.getenv("LLM_MODEL"),
+                       api_key=os.getenv("LLM_API_KEY"),
+                       base_url=os.getenv("BASE_URL"), )
+
+    retriever = Retriever(path="../data/memories.json")
+    add_memory,memory_operation=memory_agent(ret=retriever,model=model,checkpointer=checkpointer,config=config)
+    tools=[calc,get_weather,memory_operation,get_time,google_search,gemini_google_search,read_url]
+
+    model_with_tools=model.bind_tools(tools)
+
+
+    def call_model(state: MessagesState):
+        response = model_with_tools.invoke(state["messages"])
+        return {
+            "messages": [response],
+        }
+
+    g=StateGraph(MessagesState)
+    g.add_node("model",call_model)
+    g.add_node("tools",ToolNode(tools))
+
+    g.add_edge(START,"model")
+    g.add_conditional_edges("model",tools_condition)
+    g.add_edge("tools","model")
+
+
+    app=g.compile(checkpointer=checkpointer)
+    inputs = lambda question: {
+        "messages": [
+            {
+                "role": "user",
+                "content": question
+            }
+        ]
+    }
+    # 使用未绑定工具的 model
+    extractor = model.with_structured_output(
+        MemorySemantic,
+        method="function_calling",
+    )
+    while True:
+        question=input("输入问题：\n")
+        if question.lower()=="exit" or question.lower()=="q":
+            break
+        result=app.invoke(inputs(question),config=config)
+
+        for r in result["messages"]:
+            r.pretty_print()

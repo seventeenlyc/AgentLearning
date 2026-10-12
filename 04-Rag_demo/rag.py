@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from openai import OpenAI
-
+from sentence_transformers import CrossEncoder
 from retriever import Retriever
 
 load_dotenv()
@@ -34,12 +34,13 @@ class RAG:
     def __init__(
         self,
         retriever:Retriever,
-        model: str,
+        reranker:CrossEncoder=None,
+        model: str=None,
         base_url: str = None,
         api_key: str = None
     ):
         self.retriever = retriever
-
+        self.reranker = reranker or CrossEncoder("BAAI/bge-reranker-base")
         self.client = OpenAI(
             api_key=api_key or os.getenv("ASTRAFLOW_API_KEY"),
             base_url=base_url or os.getenv("ASTRAFLOW_BASE_URL")
@@ -47,10 +48,12 @@ class RAG:
 
         self.model = model
 
-    def answer(self, query: str, top_k: int = 5):
-        results = self.retriever.search(
+    def answer(self, query: str,*, recall_k:int =10,final_k: int = 5,min_score:float=-1.0):
+        results = self._retrieve_and_rerank(
             query,
-            top_k=top_k
+            recall_k=recall_k,
+            final_k=final_k,
+            min_score=min_score,
         )
 
         context = self._build_context(results)
@@ -60,6 +63,27 @@ class RAG:
             context
         )
 
+
+    def retrieve_and_rerank(self,query: str,recall_k:int=10,final_k:int=5,min_score:float=-1.0):
+        return self._retrieve_and_rerank(query,recall_k=recall_k,final_k=final_k,min_score=min_score)
+
+
+    def _retrieve_and_rerank(self,query:str,recall_k:int=10,final_k:int=5,min_score:float=-1.0):
+        candidates=self.retriever.raw_search(query,top_k=recall_k,min_score=min_score)
+        if not candidates:
+            return []
+        pairs=[(query,self.retriever.build_search_text(candidate["memory"])) for candidate in candidates]
+        scores=self.reranker.predict(pairs)
+        results=[
+            {
+                "memory":item["memory"],
+                "recall_score":item["score"],
+                "rerank_score":float(score)
+            }for item,score in zip(candidates,scores)
+        ]
+        results.sort(key=lambda item: item["rerank_score"],reverse=True)
+        return results[:min(final_k,len(results))]
+
     def _build_context(self, results):
         context = []
 
@@ -67,11 +91,15 @@ class RAG:
             memory = result["memory"]
 
             context.append(
-                f"[{memory['id']}]\n"
-                f"时间：{memory.get('event_time', '')}\n"
-                f"地点：{memory.get('location', '')}\n"
-                f"内容：{memory['content']}"
+            f"类型：{memory['type']}\n"
+            f"摘要：{memory['summary']}\n"
+            f"标签：{','.join(memory['tags'])}\n"
+            f"相关实体：{','.join(memory['entities'])}\n"
+            f"时间：{memory.get('event_time', '')}\n"
+            f"地点：{memory.get('location', '')}\n"
+            f"内容：{memory['content']}"
             )
+
 
         return "\n\n".join(context)
 

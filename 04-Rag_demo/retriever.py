@@ -3,7 +3,7 @@ import os
 from typing import List, Dict
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer,CrossEncoder
 
 
 class Retriever:
@@ -12,7 +12,8 @@ class Retriever:
                  model=None,
                  ):
         self.path = path
-        self.model = model or SentenceTransformer("BAAI/bge-small-zh-v1.5")
+        self.model = model or SentenceTransformer("BAAI/bge-small-zh-v1.5",local_files_only=True,)
+        self.reranker=CrossEncoder("BAAI/bge-reranker-base",local_files_only=True,)
         self.memory=[]
         self._load_memory(path,raw_memory)
         self.documents=[self._build_search_text(x) for x in self.memory]
@@ -27,7 +28,7 @@ class Retriever:
         return self._add_memory(memory)
 
 
-    def search(self,query:str,top_k:int,min_score=0.35):
+    def raw_search(self,query:str,top_k:int,min_score=0.35):
         return self._search(query,top_k,min_score)
 
 
@@ -53,6 +54,10 @@ class Retriever:
         if not self._check_memory(new_memory):
             raise self._invalid_memory()
         return self._update_memory(memory_id,new_memory)
+
+    def reranked_search(self,query:str,recall_k:int=10,final_k:int=5,min_score:float=-1.0):
+        return self._retrieve_and_rerank(query,recall_k,final_k,min_score)
+
 
     def _load_memory(self,path,raw_memory):
         if path:
@@ -92,8 +97,11 @@ class Retriever:
 
 
     def _search(self,query:str,top_k=3,min_score=0.35):
+        if not self.memory:
+            return []
         query_embedding=self.model.encode(query,normalize_embeddings=True)
         scores=self.embeddings @ query_embedding
+        top_k=min(top_k,len(scores))
         top_vector=np.argsort(scores)[::-1][:top_k]
         results=[]
         for i in top_vector:
@@ -140,6 +148,24 @@ class Retriever:
                 return True
 
         return False
+
+
+
+    def _retrieve_and_rerank(self,query:str,recall_k:int=10,final_k:int=5,min_score:float=-1.0):
+        candidates=self.raw_search(query,top_k=recall_k,min_score=min_score)
+        if not candidates:
+            return []
+        pairs=[(query,self.build_search_text(candidate["memory"])) for candidate in candidates]
+        scores=self.reranker.predict(pairs)
+        results=[
+            {
+                "memory":item["memory"],
+                "recall_score":item["score"],
+                "rerank_score":float(score)
+            }for item,score in zip(candidates,scores)
+        ]
+        results.sort(key=lambda item: item["rerank_score"],reverse=True)
+        return results[:min(final_k,len(results))]
 
 
     @staticmethod

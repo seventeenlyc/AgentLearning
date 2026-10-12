@@ -203,7 +203,7 @@ def memory_agent(ret:Retriever,model:ChatOpenAI,checkpointer,config):
 
 
     @tool
-    def memory_operation(task:str,*,recent_context):
+    def memory_operation(task:str,*,recent_context:str):
         """处理长期记忆的增删改查任务。"""
         search_RAG=build_memory_tools(ret)[0]
         tools=[search_RAG,add_memory,delete_memory,revise_memory]
@@ -219,7 +219,7 @@ def memory_agent(ret:Retriever,model:ChatOpenAI,checkpointer,config):
         m.add_edge(START,"model")
         m.add_conditional_edges("model",tools_condition)
         m.add_edge("tools","model")
-        memo_agent=m.compile(checkpointer=checkpointer)
+        memo_agent=m.compile(checkpointer=False)
         inputs = {
             "messages": [
                 {
