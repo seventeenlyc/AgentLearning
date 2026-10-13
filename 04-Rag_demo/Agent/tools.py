@@ -93,7 +93,9 @@ def build_memory_tools(ret:Retriever):
 @tool
 def get_time():
     """返回当前本地时间"""
-    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    now = time.localtime()
+    weekday = "一二三四五六日"[now.tm_wday]
+    return time.strftime("%Y-%m-%d %H:%M:%S", now) + f" 星期{weekday}"
 
 @tool("search_web")
 def google_search(query: str, num_results: int = 5, domains: list[str] | None = None) -> dict:

@@ -16,7 +16,7 @@ from retriever import Retriever
 
 load_dotenv()
 
-def memory_agent(ret:Retriever,model:ChatOpenAI,checkpointer,config):
+def memory_agent(ret:Retriever,model:ChatOpenAI,config):
     """记忆agent，当需要修改记忆时调用"""
     @tool
     def add_memory(raw_content:str,semantic:MemorySemantic,auto_create:bool):

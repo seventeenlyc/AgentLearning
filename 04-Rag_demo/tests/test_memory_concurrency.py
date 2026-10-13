@@ -45,6 +45,7 @@ class Encoder:
         return np.array([self.encode(text) for text in texts]).reshape(-1, 2)
 
 
+# noinspection PyAttributeOutsideInit
 class Model:
     model_name = "offline-regression"
 
@@ -70,7 +71,7 @@ class MemoryConcurrencyTests(unittest.TestCase):
             path.write_text(json.dumps(memories), encoding="utf-8")
             ret = Retriever(path=str(path), model=Encoder(deletion_started))
             model = Model()
-            _, operation = memory_agent(ret, model, InMemorySaver(), config)
+            _, operation = memory_agent(ret, model,  config)
             operation.invoke({"task": "inspect", "recent_context": "fixture"})
 
             # 保留实际删除逻辑，只用事件告知编码器另一个工具已开始执行。
